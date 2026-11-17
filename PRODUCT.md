@@ -2,35 +2,21 @@
 
 ## Platform
 
-web
-
-## Users
-
-People managing everyday tasks, including gamers.
+Web application for olive-export teams.
 
 ## Product Purpose
 
-Help users organize tasks and track their progress through a task board.
+Olive Taskboard lets authenticated users manage their own tasks while administrators assign work and review the progress of all users.
 
-## Operating Context
+## Capabilities and constraints
 
-The current board organizes tasks into To Do, In Progress, In Review, and Done.
+- Accounts use Supabase Auth with email confirmation, email/password recovery and CAPTCHA support.
+- The board organizes tasks into Por hacer, En progreso, En revisión and Completadas.
+- Users can create, update status and delete their own tasks. Administrators can assign tasks and access the separate admin dashboard after email verification.
+- Row Level Security is the authority for task and profile access; frontend role checks are only a presentation layer.
+- The browser contains only the Supabase publishable key. Service-role keys and notification secrets belong exclusively to Edge Function secrets.
+- Assignment notifications are handled by the `send-task-assignment` Edge Function with idempotency protection.
 
-## Capabilities and Constraints
+## Brand commitments
 
-- The current interface supports adding and deleting tasks and changing their status by dragging or using a status selector.
-- Data storage, collaboration, and accessibility are important considerations. Their specific requirements remain to be defined.
-- Tasks are stored in Supabase under a browser's anonymous guest session. A local backup from the earlier version is retained after import. Guest sessions are not recoverable across devices or after browser data is cleared; collaboration is not implemented.
-- Each user's tasks are private: other users must not be able to read, create, modify, or delete them. Enforce this in the database using the authenticated user's identity.
-- Users can organize tasks with private custom labels, priority, and due dates, and filter by title, priority, label, or assignee. Assignee names are personal notes and do not grant access to other users.
-
-## Brand Commitments
-
-The current interface uses the name NEXTPLAYG WORKSPACE.
-Use Poppins and Playfair Display for typography.
-
-## Product Principles
-
-- Make organizing and tracking tasks approachable for everyday users, including gamers.
-- Keep task progress understandable across the board's workflow.
-- Account for data storage, collaboration, and accessibility as their requirements are established.
+Use the Olive Taskboard name with Poppins for interface text and the approved display typeface for the wordmark.

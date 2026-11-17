@@ -16,6 +16,7 @@ dist-ssr
 .codex
 .env*
 !.env.example
+supabase/.temp/
 .impeccable/
 
 # Editor directories and files
@@ -28,3 +29,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
