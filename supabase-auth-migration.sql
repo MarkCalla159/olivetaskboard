@@ -64,6 +64,11 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created after insert on auth.users for each row execute procedure public.handle_new_user();
 alter table public.profiles add column if not exists phone_number text not null default '';
 alter table public.profiles add column if not exists whatsapp_notifications_enabled boolean not null default true;
+-- Clean legacy values before adding the stricter international phone constraint.
+update public.profiles
+set phone_number = ''
+where phone_number is null
+   or (phone_number <> '' and phone_number !~ '^\+[1-9][0-9]{7,14}$');
 do $$ begin
   if not exists (select 1 from pg_constraint where conname = 'profiles_display_name_length') then alter table public.profiles add constraint profiles_display_name_length check (char_length(display_name) <= 80); end if;
   if not exists (select 1 from pg_constraint where conname = 'profiles_phone_format') then alter table public.profiles add constraint profiles_phone_format check (phone_number = '' or phone_number ~ '^\+[1-9][0-9]{7,14}$'); end if;
