@@ -707,6 +707,7 @@ select:focus-visible {
 }
 
 .auth-card h1 { margin: 0; font-family: 'Poppins', system-ui, sans-serif; }
+.auth-card .subtitle { color: #596e61; }
 .auth-card form { display: grid; gap: 8px; margin-top: 24px; }
 .auth-card label { color: #344c3f; font-size: .8rem; font-weight: 700; }
 .auth-card input, .auth-card button, .create-panel select { min-height: 46px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 7px; }
@@ -777,6 +778,14 @@ select:focus-visible {
 }
 
 @media (max-width: 600px) {
+  .auth-shell {
+    padding: 16px;
+  }
+
+  .auth-card {
+    padding: clamp(24px, 7vw, 36px);
+  }
+
   .app {
     padding: 16px 16px 40px;
   }
