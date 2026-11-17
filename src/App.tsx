@@ -39,6 +39,7 @@ function AuthScreen() {
     if (captchaSiteKey && !captchaToken) { setError('Completa la verificación CAPTCHA.'); return }
     if (mode === 'recovery') { setBusy(true); const result = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin, captchaToken: captchaToken || undefined }); setBusy(false); setCaptchaToken(''); setCaptchaResetKey(value => value + 1); if (result.error) setError('No se pudo enviar el enlace de recuperación.'); else setMessage('Revisa tu correo para continuar con la recuperación.'); return }
     if (password.length < 12) { setError('La contraseña debe tener al menos 12 caracteres.'); return }
+    if (mode === 'signup' && !/^\+[1-9]\d{7,14}$/.test(phone.trim())) { setError('El teléfono debe incluir el código de país, por ejemplo +51999111222.'); return }
     setBusy(true)
     const result = mode === 'login' ? await supabase.auth.signInWithPassword({ email, password, options: captchaToken ? { captchaToken } : undefined }) : await supabase.auth.signUp({ email, password, options: { captchaToken: captchaToken || undefined, data: { display_name: name.trim(), phone_number: phone.replace(/[^\d+]/g, '') } } })
     setBusy(false); setCaptchaToken(''); setCaptchaResetKey(value => value + 1)

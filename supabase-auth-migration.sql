@@ -58,7 +58,7 @@ with check (auth.uid() = assignee_id or auth.uid() = created_by or public.is_adm
 create policy "Users can delete visible tasks" on public.tasks for delete using (auth.uid() = created_by or public.is_admin());
 
 create or replace function public.handle_new_user() returns trigger language plpgsql security definer set search_path = public as $$
-begin insert into public.profiles (id, display_name, phone_number) values (new.id, coalesce(new.raw_user_meta_data->>'display_name', ''), coalesce(new.raw_user_meta_data->>'phone_number', '')); return new; end;
+begin insert into public.profiles (id, display_name, phone_number) values (new.id, coalesce(new.raw_user_meta_data->>'display_name', ''), case when coalesce(new.raw_user_meta_data->>'phone_number', '') ~ '^\+[1-9][0-9]{7,14}$' then new.raw_user_meta_data->>'phone_number' else '' end); return new; end;
 $$;
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created after insert on auth.users for each row execute procedure public.handle_new_user();
