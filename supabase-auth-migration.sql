@@ -19,8 +19,21 @@ create policy "Users can read their own profile" on public.profiles for select u
 
 alter table public.tasks add column if not exists created_by uuid references auth.users(id) on delete cascade;
 alter table public.tasks add column if not exists assignee_id uuid references auth.users(id) on delete cascade;
-update public.tasks set created_by = user_id where created_by is null;
-update public.tasks set assignee_id = user_id where assignee_id is null;
+do $$
+begin
+  -- Older installations used user_id. Fresh installations do not, so never
+  -- reference that column directly in a migration.
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'tasks' and column_name = 'user_id'
+  ) then
+    execute 'update public.tasks set created_by = user_id where created_by is null';
+    execute 'update public.tasks set assignee_id = user_id where assignee_id is null';
+  end if;
+  if exists (select 1 from public.tasks where created_by is null or assignee_id is null) then
+    raise exception 'No se pueden completar los propietarios de tasks. Asigna created_by y assignee_id antes de continuar.';
+  end if;
+end $$;
 alter table public.tasks alter column created_by set not null;
 alter table public.tasks alter column assignee_id set not null;
 
