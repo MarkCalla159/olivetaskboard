@@ -74,5 +74,9 @@ $$;
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created after insert on auth.users for each row execute procedure public.handle_new_user();
 insert into public.profiles (id, display_name, phone_number)
-select id, coalesce(raw_user_meta_data->>'display_name', ''), coalesce(raw_user_meta_data->>'phone_number', '') from auth.users
+select id,
+       coalesce(raw_user_meta_data->>'display_name', ''),
+       case when coalesce(raw_user_meta_data->>'phone_number', '') ~ '^\+[1-9][0-9]{7,14}$'
+            then raw_user_meta_data->>'phone_number' else '' end
+from auth.users
 on conflict (id) do nothing;

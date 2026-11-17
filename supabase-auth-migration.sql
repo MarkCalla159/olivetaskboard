@@ -78,7 +78,11 @@ do $$ begin
   if not exists (select 1 from pg_constraint where conname = 'tasks_labels_count') then alter table public.tasks add constraint tasks_labels_count check (cardinality(labels) <= 30); end if;
 end $$;
 insert into public.profiles (id, display_name, phone_number)
-select id, coalesce(raw_user_meta_data->>'display_name', ''), coalesce(raw_user_meta_data->>'phone_number', '') from auth.users
+select id,
+       coalesce(raw_user_meta_data->>'display_name', ''),
+       case when coalesce(raw_user_meta_data->>'phone_number', '') ~ '^\+[1-9][0-9]{7,14}$'
+            then raw_user_meta_data->>'phone_number' else '' end
+from auth.users
 on conflict (id) do nothing;
 create index if not exists tasks_assignee_idx on public.tasks(assignee_id, status);
 create table if not exists public.task_notification_events (
